@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "source": "Haldia Municipality — Haldia Municipal Boundary 2012 KMZ",
+    "calculation": "Geodesic WGS84 polygon area calculation",
+    "area_unit": "km2",
+    "wards": 26,
+    "total_area_km2": 102.7688770629
+  },
+  "wards": [
+    { "ward_number": 1, "area_km2": 3.0282550486 },
+    { "ward_number": 2, "area_km2": 4.5949950304 },
+    { "ward_number": 3, "area_km2": 3.9407857473 },
+    { "ward_number": 4, "area_km2": 5.0616245793 },
+    { "ward_number": 5, "area_km2": 5.1753249349 },
+    { "ward_number": 6, "area_km2": 6.3545500182 },
+    { "ward_number": 7, "area_km2": 2.8966721443 },
+    { "ward_number": 8, "area_km2": 2.6483145544 },
+    { "ward_number": 9, "area_km2": 1.6180849661 },
+    { "ward_number": 10, "area_km2": 1.5612353861 },
+    { "ward_number": 11, "area_km2": 12.1227617557 },
+    { "ward_number": 12, "area_km2": 6.7077112803 },
+    { "ward_number": 13, "area_km2": 3.3317011292 },
+    { "ward_number": 14, "area_km2": 4.1530680791 },
+    { "ward_number": 15, "area_km2": 3.5595477288 },
+    { "ward_number": 16, "area_km2": 4.6533524273 },
+    { "ward_number": 17, "area_km2": 2.2285293725 },
+    { "ward_number": 18, "area_km2": 4.9411491118 },
+    { "ward_number": 19, "area_km2": 3.1742512227 },
+    { "ward_number": 20, "area_km2": 1.7065213469 },
+    { "ward_number": 21, "area_km2": 5.2694723105 },
+    { "ward_number": 22, "area_km2": 3.3630514136 },
+    { "ward_number": 23, "area_km2": 3.1970965990 },
+    { "ward_number": 24, "area_km2": 2.8586417592 },
+    { "ward_number": 25, "area_km2": 1.5620744876 },
+    { "ward_number": 26, "area_km2": 3.0601046289 }
+  ]
+}

@@ -1,6 +1,8 @@
 import json
 import os
+# pyrefly: ignore [missing-import]
 from fastapi import FastAPI, HTTPException
+# pyrefly: ignore [missing-import]
 import httpx
 
 app = FastAPI(title="Thermal Risk - Phase 1 Weather Ingestion API")
@@ -8,7 +10,12 @@ app = FastAPI(title="Thermal Risk - Phase 1 Weather Ingestion API")
 # Load locations from local JSON
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 AREAS_FILE = os.path.join(BASE_DIR, "haldia_areas.json")
+WARD_MAP_FILE = os.path.join(BASE_DIR, "data", "haldia_h_area_ward_map.json")
+POP_DENSITY_FILE = os.path.join(BASE_DIR, "data", "haldia_population_density.json")
+
 areas_db = {}
+ward_map_db = {}
+pop_density_db = {}
 
 def load_areas():
     global areas_db
@@ -18,8 +25,50 @@ def load_areas():
             for item in data:
                 areas_db[item["area_id"]] = item
 
+def load_ward_data():
+    global ward_map_db, pop_density_db
+    if os.path.exists(WARD_MAP_FILE):
+        with open(WARD_MAP_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            ward_map_db = data.get("mapping", {})
+    if os.path.exists(POP_DENSITY_FILE):
+        with open(POP_DENSITY_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            for item in data:
+                pop_density_db[item["ward_number"]] = item
+
 # Initialize db
 load_areas()
+load_ward_data()
+
+def get_ward_and_demographics(area_id):
+    ward_info = {"ward_number": None, "mapping_status": "unmapped"}
+    demographics = None
+    
+    if area_id in ward_map_db:
+        mapping = ward_map_db[area_id]
+        status = mapping.get("mapping_status")
+        # Map gis_verified to mapped for the API response, or keep original outside_municipal_boundary
+        if status == "gis_verified":
+            ward_info["mapping_status"] = "mapped"
+            ward_info["ward_number"] = mapping.get("ward_number")
+        elif status == "outside_municipal_boundary":
+            ward_info["mapping_status"] = "outside_boundary"
+        else:
+            ward_info["mapping_status"] = status
+            
+        if ward_info["ward_number"] is not None and ward_info["ward_number"] in pop_density_db:
+            pop_data = pop_density_db[ward_info["ward_number"]]
+            demographics = {
+                "population_2011": pop_data.get("population_2011"),
+                "area_km2": pop_data.get("area_km2"),
+                "population_density_2011": pop_data.get("population_density_2011"),
+                "data_year": pop_data.get("data_year"),
+                "population_source": pop_data.get("population_source"),
+                "boundary_source": pop_data.get("boundary_source")
+            }
+            
+    return ward_info, demographics
 
 @app.get("/")
 def root():
@@ -49,9 +98,15 @@ async def get_areas():
     result = []
     for i, area in enumerate(areas_list):
         current_data = data[i].get("current", {}) if isinstance(data, list) else data.get("current", {})
+        ward_info, demographics = get_ward_and_demographics(area["area_id"])
+        
         result.append({
             "area_id": area["area_id"],
             "area_name": area["area_name"],
+            "latitude": area["latitude"],
+            "longitude": area["longitude"],
+            "ward": ward_info,
+            "demographics": demographics,
             "current": {
                 "temperature": current_data.get("temperature_2m"),
                 "relative_humidity": current_data.get("relative_humidity_2m"),
@@ -75,6 +130,8 @@ async def get_weather(area_id: str):
     lat = area_info["latitude"]
     lon = area_info["longitude"]
     
+    ward_info, demographics = get_ward_and_demographics(area_id)
+    
     # Open-Meteo API endpoint
     # Fetching current weather and hourly forecasts for temperature_2m, relative_humidity_2m, wind_speed_10m
     # Using forecast_days=3 to get exactly 72 hours of data
@@ -94,6 +151,8 @@ async def get_weather(area_id: str):
     current_data = data.get("current", {})
     standardized_data = {
         "area": area_info,
+        "ward": ward_info,
+        "demographics": demographics,
         "metadata": {
             "timezone": "IST",
             "elevation": data.get("elevation"),

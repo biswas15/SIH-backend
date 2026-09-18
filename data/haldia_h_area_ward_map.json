@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "description": "GIS-verified mapping of H01-H30 sampling locations to official Haldia Municipal ward boundaries",
+    "mapping_method": "Point-in-polygon using ray-casting against KMZ ward polygons",
+    "boundary_source": "Haldia Municipality — Haldia Municipal Boundary 2012 KMZ",
+    "gis_verified_count": 25,
+    "outside_municipal_boundary_count": 5
+  },
+  "mapping": {
+    "H01": { "ward_number": 19, "mapping_status": "gis_verified" },
+    "H02": { "ward_number": 26, "mapping_status": "gis_verified" },
+    "H03": { "ward_number": 9,  "mapping_status": "gis_verified" },
+    "H04": { "ward_number": 1,  "mapping_status": "gis_verified" },
+    "H05": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H06": { "ward_number": 10, "mapping_status": "gis_verified" },
+    "H07": { "ward_number": 4,  "mapping_status": "gis_verified" },
+    "H08": { "ward_number": 24, "mapping_status": "gis_verified" },
+    "H09": { "ward_number": null, "mapping_status": "outside_municipal_boundary" },
+    "H10": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H11": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H12": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H13": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H14": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H15": { "ward_number": 21, "mapping_status": "gis_verified" },
+    "H16": { "ward_number": 19, "mapping_status": "gis_verified" },
+    "H17": { "ward_number": null, "mapping_status": "outside_municipal_boundary" },
+    "H18": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H19": { "ward_number": null, "mapping_status": "outside_municipal_boundary" },
+    "H20": { "ward_number": null, "mapping_status": "outside_municipal_boundary" },
+    "H21": { "ward_number": null, "mapping_status": "outside_municipal_boundary" },
+    "H22": { "ward_number": 10, "mapping_status": "gis_verified" },
+    "H23": { "ward_number": 26, "mapping_status": "gis_verified" },
+    "H24": { "ward_number": 22, "mapping_status": "gis_verified" },
+    "H25": { "ward_number": 11, "mapping_status": "gis_verified" },
+    "H26": { "ward_number": 23, "mapping_status": "gis_verified" },
+    "H27": { "ward_number": 10, "mapping_status": "gis_verified" },
+    "H28": { "ward_number": 14, "mapping_status": "gis_verified" },
+    "H29": { "ward_number": 26, "mapping_status": "gis_verified" },
+    "H30": { "ward_number": 11, "mapping_status": "gis_verified" }
+  }
+}

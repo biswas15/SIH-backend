@@ -1,0 +1,13 @@
+[INFO] Loading: C:\Users\md raquif\SIH-backend\data\haldia_population_density.json
+[PASS] Exactly 26 ward records found.
+[PASS] Ward numbers 1 through 26 all present.
+[PASS] No duplicate ward numbers.
+[PASS] All population_2011 values are positive.
+[PASS] All area_km2 values are positive.
+[PASS] Density = population / area verified for all 26 wards (within tolerance).
+[PASS] No missing or null values in required fields.
+[INFO] ---
+[INFO] Sample Ward 1: {"ward_number": 1, "population_2011": 6308, "area_km2": 3.0282550486, "population_density_2011": 2083.05, "data_year": 2011, "population_source": "Census of India 2011 — Haldia (M) ward record", "boundary_source": "Haldia Municipality — Haldia Municipal Boundary 2012 KMZ"}
+[INFO] Sample Ward 26: {"ward_number": 26, "population_2011": 7861, "area_km2": 3.0601046289, "population_density_2011": 2568.87, "data_year": 2011, "population_source": "Census of India 2011 — Haldia (M) ward record", "boundary_source": "Haldia Municipality — Haldia Municipal Boundary 2012 KMZ"}
+[INFO] ---
+[INFO] Validation complete: 7 passed, 0 failed.
