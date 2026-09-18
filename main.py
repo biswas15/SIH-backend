@@ -5,6 +5,8 @@ from fastapi import FastAPI, HTTPException
 # pyrefly: ignore [missing-import]
 import httpx
 
+from app.engine.thermal import compute_thermal_metrics
+
 app = FastAPI(title="Thermal Risk - Phase 1 Weather Ingestion API")
 
 # Load locations from local JSON
@@ -100,6 +102,14 @@ async def get_areas():
         current_data = data[i].get("current", {}) if isinstance(data, list) else data.get("current", {})
         ward_info, demographics = get_ward_and_demographics(area["area_id"])
         
+        thermal_metrics = None
+        if demographics:
+            macro_temp = current_data.get("temperature_2m", 0.0)
+            rh = current_data.get("relative_humidity_2m", 0.0)
+            wind_speed_kmh = current_data.get("wind_speed_10m", 0.0)
+            lst_anomaly = round((demographics.get("population_density_2011", 0) / 3000.0) * 2.0, 2)
+            thermal_metrics = compute_thermal_metrics(macro_temp, rh, wind_speed_kmh, lst_anomaly)
+        
         result.append({
             "area_id": area["area_id"],
             "area_name": area["area_name"],
@@ -112,7 +122,8 @@ async def get_areas():
                 "relative_humidity": current_data.get("relative_humidity_2m"),
                 "wind_speed": current_data.get("wind_speed_10m"),
                 "time": current_data.get("time")
-            }
+            },
+            "thermal_metrics": thermal_metrics
         })
         
     return result
@@ -149,10 +160,20 @@ async def get_weather(area_id: str):
             
     # Standardize output
     current_data = data.get("current", {})
+    
+    thermal_metrics = None
+    if demographics:
+        macro_temp = current_data.get("temperature_2m", 0.0)
+        rh = current_data.get("relative_humidity_2m", 0.0)
+        wind_speed_kmh = current_data.get("wind_speed_10m", 0.0)
+        lst_anomaly = round((demographics.get("population_density_2011", 0) / 3000.0) * 2.0, 2)
+        thermal_metrics = compute_thermal_metrics(macro_temp, rh, wind_speed_kmh, lst_anomaly)
+        
     standardized_data = {
         "area": area_info,
         "ward": ward_info,
         "demographics": demographics,
+        "thermal_metrics": thermal_metrics,
         "metadata": {
             "timezone": "IST",
             "elevation": data.get("elevation"),

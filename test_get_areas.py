@@ -21,7 +21,7 @@ async def run_tests():
     area_map = {item["area_id"]: item for item in areas}
 
     # 2. Assert every record contains required keys
-    required_keys = {"area_id", "area_name", "latitude", "longitude", "ward", "demographics", "current"}
+    required_keys = {"area_id", "area_name", "latitude", "longitude", "ward", "demographics", "current", "thermal_metrics"}
     
     mapped_count = 0
     outside_count = 0
@@ -37,8 +37,9 @@ async def run_tests():
         status = record["ward"]["mapping_status"]
         ward_num = record["ward"]["ward_number"]
         demo = record["demographics"]
+        thermal = record.get("thermal_metrics")
 
-        # 3. Assert mapped areas contain mapping_status == "mapped", non-null numeric ward_number, and non-null demographics
+        # 3. Assert mapped areas contain mapping_status == "mapped", non-null numeric ward_number, non-null demographics, and thermal_metrics
         if status == "mapped":
             mapped_count += 1
             assert ward_num is not None, f"Mapped record {record['area_id']} has ward_number None"
@@ -47,11 +48,18 @@ async def run_tests():
             assert isinstance(demo, dict), f"Mapped record {record['area_id']} demographics is not dict"
             assert "population_2011" in demo and demo["population_2011"] is not None
             assert "population_density_2011" in demo and demo["population_density_2011"] is not None
-        # 4. Assert unmapped/outside areas contain mapping_status == "outside_boundary", ward_number == None, and demographics == None
+            
+            assert thermal is not None, f"Mapped record {record['area_id']} has thermal_metrics None"
+            assert isinstance(thermal, dict), f"Mapped record {record['area_id']} thermal_metrics is not dict"
+            assert "downscaled_temp" in thermal
+            assert "wbgt_proxy" in thermal
+            assert "heat_index" in thermal
+        # 4. Assert unmapped/outside areas contain mapping_status == "outside_boundary", ward_number == None, demographics == None, thermal_metrics == None
         elif status == "outside_boundary":
             outside_count += 1
             assert ward_num is None, f"Outside record {record['area_id']} has ward_number {ward_num}, expected None"
             assert demo is None, f"Outside record {record['area_id']} has demographics {demo}, expected None"
+            assert thermal is None, f"Outside record {record['area_id']} has thermal_metrics {thermal}, expected None"
         else:
             raise AssertionError(f"Record {record['area_id']} has unexpected mapping_status '{status}'")
 
