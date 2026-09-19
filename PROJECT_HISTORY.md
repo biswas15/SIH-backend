@@ -112,8 +112,40 @@ This document serves as the single source of truth for all changes, architectura
 | `generate_population_density.py` | Generator script for population density dataset | Active (Phase 2) |
 | `validate_population_density.py` | Automated validator for ward population density | Active (Phase 2) |
 | `gis_ward_mapping.py` | Spatial point-in-polygon join script for H01-H30 to Wards | Active (Phase 2) |
+| `gis_ward_mapping.py` | Spatial point-in-polygon join script for H01-H30 to Wards | Active (Phase 2) |
 | `data/haldia_h_area_ward_map.json` | Mapping dataset connecting H01-H30 points to Haldia wards | Active (Phase 2) |
+| `app/engine/downscale.py` | Microclimate temperature downscaling engine | Active (Phase 3) |
+| `app/engine/thermal.py` | Thermodynamic math engine (BOM WBGT proxy & NOAA Heat Index) | Active (Phase 3) |
+| `tests/test_thermal_math.py` | Unit test suite for thermodynamic formulas and integration | Active (Phase 3) |
 | `PROJECT_HISTORY.md` | Comprehensive single-file context & iteration tracker | Active |
 
 ---
+
+### Phase 3: Microclimate Downscaling & Thermodynamic Math Engine Integration
+* **Goal**: Implement microclimate temperature downscaling based on census population density LST anomaly proxy and calculate thermodynamic thermal stress metrics (BOM WBGT proxy and NOAA Heat Index) without ML models or final HTR score aggregation.
+* **Date**: September 18, 2026
+
+#### 1. Formulations & Implementation
+* **Microclimate Temperature Downscaling (`app/engine/downscale.py`)**:
+  $$\text{LST Anomaly Proxy} = \text{round}\left(\frac{\text{population\_density\_2011}}{3000.0} \times 2.0, 2\right)$$
+  $$T_{\text{downscaled}} = T_{\text{macro}} + (\alpha \times \text{LST Anomaly Proxy}), \quad \alpha = 0.35$$
+* **Australian Bureau of Meteorology (BOM) WBGT Proxy (`app/engine/thermal.py`)**:
+  * Calculates vapor pressure $e$ (hPa) from temperature ($T$) and relative humidity ($RH$):
+    $$e = \frac{RH}{100} \times 6.105 \times \exp\left(\frac{17.27 \times T}{237.7 + T}\right)$$
+  * Computes WBGT proxy incorporating wind speed ($v$ in m/s):
+    $$\text{WBGT} = 0.567 \times T + 0.393 \times e + 0.394 \times v - 4.3$$
+* **NOAA Heat Index (`app/engine/thermal.py`)**:
+  * Full Rothfusz multi-parameter regression formula for perceived temperature, including low-humidity and high-humidity adjustment factors.
+
+#### 2. API Integration (`main.py`)
+* Integrated `compute_thermal_metrics` into `GET /api/areas` and `GET /api/weather`.
+* Extracted Open-Meteo current temperature, relative humidity, and wind speed.
+* Dynamically derived population density LST anomaly proxy for mapped wards and appended `"thermal_metrics"` (`downscaled_temp`, `wbgt_proxy`, `heat_index`) to API responses.
+
+#### 3. Verification & Testing
+* Unit test suite `tests/test_thermal_math.py` verified exact formulas, bounds, and API endpoint integration.
+* Updated `test_get_areas.py` to assert the presence and validity of `thermal_metrics` across all 30 sampling areas.
+
+---
 *Note: This file will be continuously updated after every subsequent iteration plan to maintain complete project context.*
+

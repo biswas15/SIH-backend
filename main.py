@@ -5,7 +5,14 @@ from fastapi import FastAPI, HTTPException
 # pyrefly: ignore [missing-import]
 import httpx
 
-from app.engine.thermal import compute_thermal_metrics
+from app.engine.thermal import thermal_stress_score, calculate_bom_wbgt
+from app.engine.vulnerability import calculate_vulnerability
+from app.engine.htsi import (
+    calculate_htsi,
+    classify_risk,
+    generate_risk_drivers,
+    generate_actions,
+)
 
 app = FastAPI(title="Thermal Risk - Phase 1 Weather Ingestion API")
 
@@ -50,7 +57,7 @@ def get_ward_and_demographics(area_id):
     if area_id in ward_map_db:
         mapping = ward_map_db[area_id]
         status = mapping.get("mapping_status")
-        # Map gis_verified to mapped for the API response, or keep original outside_municipal_boundary
+        # Map gis_verified to mapped for the API response
         if status == "gis_verified":
             ward_info["mapping_status"] = "mapped"
             ward_info["ward_number"] = mapping.get("ward_number")
@@ -72,6 +79,69 @@ def get_ward_and_demographics(area_id):
             
     return ward_info, demographics
 
+def process_area_timestep(temp_c: float | None, rh: float | None, wind_kmh: float | None, radiation_w_m2: float | None, pop_density: float):
+    """
+    Common processing function for both current and forecast data.
+    Implements the full unified calculation pipeline.
+    """
+    if temp_c is None or rh is None:
+        return {
+            "data_status": "unavailable"
+        }
+        
+    # 1. thermal_stress_score
+    t_score_dict = thermal_stress_score(
+        temp_c=temp_c, 
+        rh=rh, 
+        wind_kmh=wind_kmh, 
+        radiation_w_m2=radiation_w_m2
+    )
+    
+    # Optional WBGT proxy for supporting metrics
+    wbgt_proxy_c = calculate_bom_wbgt(temp_c, rh)
+    t_score_dict["wbgt_proxy_c"] = wbgt_proxy_c
+    
+    # 2. calculate vulnerability
+    vuln_data = calculate_vulnerability(
+        pop_density=pop_density,
+        outdoor_worker_ratio=0.35, # default
+        built_up_ratio=0.50        # default
+    )
+    
+    # 3. compute HTSI
+    htsi_val = calculate_htsi(
+        thermal_stress_score=t_score_dict["score"],
+        vulnerability_score=vuln_data["vulnerability_score"]
+    )
+    
+    # 4. classify HTSI risk
+    risk_level = classify_risk(htsi_val)
+    
+    # 5. generate risk drivers
+    drivers = generate_risk_drivers(
+        base_score=t_score_dict["base_score"],
+        radiation_bonus=t_score_dict["radiation_bonus"],
+        wind_relief=t_score_dict["wind_relief"],
+        vulnerability_score=vuln_data["vulnerability_score"]
+    )
+    
+    # 6. action lookup
+    actions = generate_actions(risk_level)
+    
+    return {
+        "risk_level": risk_level,
+        "htsi": htsi_val,
+        "thermal_stress": t_score_dict,
+        "vulnerability": vuln_data,
+        "supporting_metrics": {
+            "heat_index_c": t_score_dict["heat_index_c"],
+            "wbgt_proxy_c": wbgt_proxy_c
+        },
+        "risk_drivers": drivers,
+        "recommended_actions": actions,
+        "data_status": "available"
+    }
+
 @app.get("/")
 def root():
     return {"message": "Thermal Risk Weather API is running."}
@@ -85,7 +155,7 @@ async def get_areas():
     lats = ",".join(str(area["latitude"]) for area in areas_list)
     lons = ",".join(str(area["longitude"]) for area in areas_list)
     
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=Asia/Kolkata"
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,shortwave_radiation&timezone=Asia/Kolkata"
     
     async with httpx.AsyncClient() as client:
         try:
@@ -102,13 +172,21 @@ async def get_areas():
         current_data = data[i].get("current", {}) if isinstance(data, list) else data.get("current", {})
         ward_info, demographics = get_ward_and_demographics(area["area_id"])
         
-        thermal_metrics = None
+        assessment = None
         if demographics:
-            macro_temp = current_data.get("temperature_2m", 0.0)
-            rh = current_data.get("relative_humidity_2m", 0.0)
-            wind_speed_kmh = current_data.get("wind_speed_10m", 0.0)
-            lst_anomaly = round((demographics.get("population_density_2011", 0) / 3000.0) * 2.0, 2)
-            thermal_metrics = compute_thermal_metrics(macro_temp, rh, wind_speed_kmh, lst_anomaly)
+            macro_temp = current_data.get("temperature_2m")
+            rh = current_data.get("relative_humidity_2m")
+            wind_speed_kmh = current_data.get("wind_speed_10m")
+            radiation = current_data.get("shortwave_radiation")
+            pop_density = demographics.get("population_density_2011", 0.0)
+            
+            assessment = process_area_timestep(
+                temp_c=macro_temp,
+                rh=rh,
+                wind_kmh=wind_speed_kmh,
+                radiation_w_m2=radiation,
+                pop_density=pop_density
+            )
         
         result.append({
             "area_id": area["area_id"],
@@ -121,9 +199,10 @@ async def get_areas():
                 "temperature": current_data.get("temperature_2m"),
                 "relative_humidity": current_data.get("relative_humidity_2m"),
                 "wind_speed": current_data.get("wind_speed_10m"),
+                "shortwave_radiation": current_data.get("shortwave_radiation"),
                 "time": current_data.get("time")
             },
-            "thermal_metrics": thermal_metrics
+            "assessment": assessment
         })
         
     return result
@@ -131,7 +210,7 @@ async def get_areas():
 @app.get("/api/weather")
 async def get_weather(area_id: str):
     """
-    Fetches current and hourly weather data (temp, humidity, wind speed) for a given area_id.
+    Fetches current and hourly weather data (temperature, relative humidity, wind speed, and solar radiation) for a given area_id.
     """
     area_id = area_id.upper()
     if area_id not in areas_db:
@@ -143,10 +222,7 @@ async def get_weather(area_id: str):
     
     ward_info, demographics = get_ward_and_demographics(area_id)
     
-    # Open-Meteo API endpoint
-    # Fetching current weather and hourly forecasts for temperature_2m, relative_humidity_2m, wind_speed_10m
-    # Using forecast_days=3 to get exactly 72 hours of data
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m&forecast_days=3&timezone=Asia/Kolkata"
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,shortwave_radiation&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,shortwave_radiation&forecast_days=3&timezone=Asia/Kolkata"
     
     async with httpx.AsyncClient() as client:
         try:
@@ -161,19 +237,26 @@ async def get_weather(area_id: str):
     # Standardize output
     current_data = data.get("current", {})
     
-    thermal_metrics = None
+    assessment = None
     if demographics:
-        macro_temp = current_data.get("temperature_2m", 0.0)
-        rh = current_data.get("relative_humidity_2m", 0.0)
-        wind_speed_kmh = current_data.get("wind_speed_10m", 0.0)
-        lst_anomaly = round((demographics.get("population_density_2011", 0) / 3000.0) * 2.0, 2)
-        thermal_metrics = compute_thermal_metrics(macro_temp, rh, wind_speed_kmh, lst_anomaly)
+        macro_temp = current_data.get("temperature_2m")
+        rh = current_data.get("relative_humidity_2m")
+        wind_speed_kmh = current_data.get("wind_speed_10m")
+        radiation = current_data.get("shortwave_radiation")
+        pop_density = demographics.get("population_density_2011", 0.0)
+        
+        assessment = process_area_timestep(
+            temp_c=macro_temp,
+            rh=rh,
+            wind_kmh=wind_speed_kmh,
+            radiation_w_m2=radiation,
+            pop_density=pop_density
+        )
         
     standardized_data = {
         "area": area_info,
         "ward": ward_info,
         "demographics": demographics,
-        "thermal_metrics": thermal_metrics,
         "metadata": {
             "timezone": "IST",
             "elevation": data.get("elevation"),
@@ -181,13 +264,16 @@ async def get_weather(area_id: str):
                 "temperature": data.get("hourly_units", {}).get("temperature_2m"),
                 "relative_humidity": data.get("hourly_units", {}).get("relative_humidity_2m"),
                 "wind_speed": data.get("hourly_units", {}).get("wind_speed_10m"),
+                "shortwave_radiation": data.get("hourly_units", {}).get("shortwave_radiation"),
             }
         },
         "current": {
             "time": current_data.get("time"),
             "temperature": current_data.get("temperature_2m"),
             "relative_humidity": current_data.get("relative_humidity_2m"),
-            "wind_speed": current_data.get("wind_speed_10m")
+            "wind_speed": current_data.get("wind_speed_10m"),
+            "shortwave_radiation": current_data.get("shortwave_radiation"),
+            "assessment": assessment
         },
         "forecast": []
     }
@@ -197,14 +283,33 @@ async def get_weather(area_id: str):
     temps = hourly.get("temperature_2m", [])
     humidities = hourly.get("relative_humidity_2m", [])
     wind_speeds = hourly.get("wind_speed_10m", [])
+    radiation_values = hourly.get("shortwave_radiation", [])
     
     # Combine the arrays into a clean list of objects
     for i in range(len(times)):
+        temp = temps[i] if i < len(temps) else None
+        rh = humidities[i] if i < len(humidities) else None
+        wind = wind_speeds[i] if i < len(wind_speeds) else None
+        radiation = radiation_values[i] if i < len(radiation_values) else None
+        
+        f_assessment = None
+        if demographics:
+            pop_density = demographics.get("population_density_2011", 0.0)
+            f_assessment = process_area_timestep(
+                temp_c=temp,
+                rh=rh,
+                wind_kmh=wind,
+                radiation_w_m2=radiation,
+                pop_density=pop_density
+            )
+
         standardized_data["forecast"].append({
             "time": times[i],
-            "temperature": temps[i] if i < len(temps) else None,
-            "relative_humidity": humidities[i] if i < len(humidities) else None,
-            "wind_speed": wind_speeds[i] if i < len(wind_speeds) else None
+            "temperature": temp,
+            "relative_humidity": rh,
+            "wind_speed": wind,
+            "shortwave_radiation": radiation,
+            "assessment": f_assessment
         })
         
     return standardized_data

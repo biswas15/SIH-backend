@@ -1,6 +1,8 @@
 import asyncio
 import sys
 import json
+# pyrefly: ignore [missing-import]
+import pytest
 from main import get_areas
 
 async def run_tests():
@@ -21,7 +23,16 @@ async def run_tests():
     area_map = {item["area_id"]: item for item in areas}
 
     # 2. Assert every record contains required keys
-    required_keys = {"area_id", "area_name", "latitude", "longitude", "ward", "demographics", "current", "thermal_metrics"}
+    required_keys = {
+        "area_id",
+        "area_name",
+        "latitude",
+        "longitude",
+        "ward",
+        "demographics",
+        "current",
+        "assessment",
+    }
     
     mapped_count = 0
     outside_count = 0
@@ -33,13 +44,14 @@ async def run_tests():
         assert isinstance(record["ward"], dict), f"Record {record['area_id']} 'ward' field is not a dictionary"
         assert "ward_number" in record["ward"], f"Record {record['area_id']} 'ward' missing 'ward_number'"
         assert "mapping_status" in record["ward"], f"Record {record['area_id']} 'ward' missing 'mapping_status'"
+        assert "current" in record and "shortwave_radiation" in record["current"], f"Record {record['area_id']} missing 'shortwave_radiation' in 'current'"
 
         status = record["ward"]["mapping_status"]
         ward_num = record["ward"]["ward_number"]
         demo = record["demographics"]
-        thermal = record.get("thermal_metrics")
+        assessment = record.get("assessment")
 
-        # 3. Assert mapped areas contain mapping_status == "mapped", non-null numeric ward_number, non-null demographics, and thermal_metrics
+        # 3. Assert mapped areas contain mapping_status == "mapped", non-null numeric ward_number, non-null demographics, and assessment
         if status == "mapped":
             mapped_count += 1
             assert ward_num is not None, f"Mapped record {record['area_id']} has ward_number None"
@@ -49,17 +61,25 @@ async def run_tests():
             assert "population_2011" in demo and demo["population_2011"] is not None
             assert "population_density_2011" in demo and demo["population_density_2011"] is not None
             
-            assert thermal is not None, f"Mapped record {record['area_id']} has thermal_metrics None"
-            assert isinstance(thermal, dict), f"Mapped record {record['area_id']} thermal_metrics is not dict"
-            assert "downscaled_temp" in thermal
-            assert "wbgt_proxy" in thermal
-            assert "heat_index" in thermal
-        # 4. Assert unmapped/outside areas contain mapping_status == "outside_boundary", ward_number == None, demographics == None, thermal_metrics == None
+            assert assessment is not None, f"Mapped record {record['area_id']} has assessment None"
+            assert isinstance(assessment, dict), f"Mapped record {record['area_id']} assessment is not a dict"
+            
+            assert "risk_level" in assessment
+            assert "htsi" in assessment
+            assert "thermal_stress" in assessment
+            assert "vulnerability" in assessment
+            assert "supporting_metrics" in assessment
+            assert "risk_drivers" in assessment
+            assert "recommended_actions" in assessment
+            assert "data_status" in assessment
+
+        # 4. Assert unmapped/outside areas contain mapping_status == "outside_boundary", ward_number == None, demographics == None, assessment == None
         elif status == "outside_boundary":
             outside_count += 1
             assert ward_num is None, f"Outside record {record['area_id']} has ward_number {ward_num}, expected None"
             assert demo is None, f"Outside record {record['area_id']} has demographics {demo}, expected None"
-            assert thermal is None, f"Outside record {record['area_id']} has thermal_metrics {thermal}, expected None"
+            assert assessment is None, f"Outside record {record['area_id']} has assessment {assessment}, expected None"
+            
         else:
             raise AssertionError(f"Record {record['area_id']} has unexpected mapping_status '{status}'")
 
@@ -106,6 +126,12 @@ async def run_tests():
 
     print("\nSUCCESS: All schema and demographic assertions passed!")
 
+
+@pytest.mark.anyio
+async def test_get_areas_full():
+    """Pytest-compatible wrapper for the full /api/areas integration test suite."""
+    await run_tests()
+
+
 if __name__ == "__main__":
     asyncio.run(run_tests())
-
