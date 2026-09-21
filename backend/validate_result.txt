@@ -1,0 +1,27 @@
+--- Starting Validation ---
+1. Checking JSON files...
+SUCCESS 1: haldia_indicators.json is valid JSON with exactly 30 matching area IDs.
+SUCCESS 2: Indicator ranges and data_status=='demo' verified for all 30 wards.
+2. Testing Pydantic schema import...
+ERROR: Validation failed: ModuleNotFoundError: No module named 'pydantic_core._pydantic_core'
+Traceback (most recent call last):
+  File "C:\Users\md raquif\SIH-backend\validate_phase1.py", line 58, in <module>
+    from app.schemas.risk_schema import (
+    ...<4 lines>...
+    )
+  File "C:\Users\md raquif\SIH-backend\app\schemas\risk_schema.py", line 2, in <module>
+    from pydantic import BaseModel, Field, field_validator
+  File "C:\Users\md raquif\SIH-backend\venv\Lib\site-packages\pydantic\__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "C:\Users\md raquif\SIH-backend\venv\Lib\site-packages\pydantic\_migration.py", line 4, in <module>
+    from pydantic.warnings import PydanticDeprecatedSince20
+  File "C:\Users\md raquif\SIH-backend\venv\Lib\site-packages\pydantic\warnings.py", line 5, in <module>
+    from .version import version_short
+  File "C:\Users\md raquif\SIH-backend\venv\Lib\site-packages\pydantic\version.py", line 7, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+  File "C:\Users\md raquif\SIH-backend\venv\Lib\site-packages\pydantic_core\__init__.py", line 8, in <module>
+    from ._pydantic_core import (
+    ...<21 lines>...
+    )
+ModuleNotFoundError: No module named 'pydantic_core._pydantic_core'
+

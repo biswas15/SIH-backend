@@ -1,0 +1,210 @@
+[
+  {
+    "ward_id": 1,
+    "latitude": 22.119844,
+    "longitude": 88.113803,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 401,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 2,
+    "latitude": 22.111002,
+    "longitude": 88.127403,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 334,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 3,
+    "latitude": 22.101499,
+    "longitude": 88.144211,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 379,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 4,
+    "latitude": 22.091341,
+    "longitude": 88.127979,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 289,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 5,
+    "latitude": 22.089493,
+    "longitude": 88.159262,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 309,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 6,
+    "latitude": 22.115541,
+    "longitude": 88.173787,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 273,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 7,
+    "latitude": 22.076248,
+    "longitude": 88.153677,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 189,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 8,
+    "latitude": 22.067143,
+    "longitude": 88.143098,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 93,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 9,
+    "latitude": 22.060361,
+    "longitude": 88.130142,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 99,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 10,
+    "latitude": 22.075618,
+    "longitude": 88.124124,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 166,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 11,
+    "latitude": 22.05953,
+    "longitude": 88.108108,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 411,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 12,
+    "latitude": 22.079557,
+    "longitude": 88.102846,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 697,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 13,
+    "latitude": 22.066082,
+    "longitude": 88.085704,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 247,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 14,
+    "latitude": 22.081659,
+    "longitude": 88.076404,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 198,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 15,
+    "latitude": 22.082326,
+    "longitude": 88.056125,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 199,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 16,
+    "latitude": 22.081937,
+    "longitude": 88.035023,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 500,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 17,
+    "latitude": 22.070386,
+    "longitude": 88.031259,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 213,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 18,
+    "latitude": 22.048095,
+    "longitude": 88.040759,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 166,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 19,
+    "latitude": 22.064717,
+    "longitude": 88.054648,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 153,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 20,
+    "latitude": 22.053131,
+    "longitude": 88.068741,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 71,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 21,
+    "latitude": 22.044498,
+    "longitude": 88.085293,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 282,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 22,
+    "latitude": 22.028785,
+    "longitude": 88.077292,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 226,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 23,
+    "latitude": 22.036568,
+    "longitude": 88.066766,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 162,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 24,
+    "latitude": 22.049111,
+    "longitude": 88.055245,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 102,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 25,
+    "latitude": 22.034804,
+    "longitude": 88.048194,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 147,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  },
+  {
+    "ward_id": 26,
+    "latitude": 22.021328,
+    "longitude": 88.060547,
+    "centroid_method": "arithmetic_mean_of_polygon_vertices_wgs84",
+    "n_vertices": 305,
+    "geometry_source": "Haldia Municipality ward boundary KMZ (WardBoundary.kmz)"
+  }
+]

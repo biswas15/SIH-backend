@@ -1,0 +1,242 @@
+[
+  {
+    "area_id": "H01",
+    "population_density": 8200.0,
+    "built_up_ratio": 0.78,
+    "outdoor_labor_ratio": 0.48,
+    "lst_anomaly": 2.4,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H02",
+    "population_density": 7500.0,
+    "built_up_ratio": 0.82,
+    "outdoor_labor_ratio": 0.55,
+    "lst_anomaly": 2.8,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H03",
+    "population_density": 8900.0,
+    "built_up_ratio": 0.80,
+    "outdoor_labor_ratio": 0.50,
+    "lst_anomaly": 2.6,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H04",
+    "population_density": 4500.0,
+    "built_up_ratio": 0.68,
+    "outdoor_labor_ratio": 0.42,
+    "lst_anomaly": 1.8,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H05",
+    "population_density": 6200.0,
+    "built_up_ratio": 0.85,
+    "outdoor_labor_ratio": 0.58,
+    "lst_anomaly": 2.9,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H06",
+    "population_density": 4100.0,
+    "built_up_ratio": 0.52,
+    "outdoor_labor_ratio": 0.32,
+    "lst_anomaly": 0.8,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H07",
+    "population_density": 3800.0,
+    "built_up_ratio": 0.48,
+    "outdoor_labor_ratio": 0.28,
+    "lst_anomaly": 0.5,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H08",
+    "population_density": 5100.0,
+    "built_up_ratio": 0.55,
+    "outdoor_labor_ratio": 0.35,
+    "lst_anomaly": 1.1,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H09",
+    "population_density": 3200.0,
+    "built_up_ratio": 0.38,
+    "outdoor_labor_ratio": 0.25,
+    "lst_anomaly": 0.2,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H10",
+    "population_density": 5800.0,
+    "built_up_ratio": 0.83,
+    "outdoor_labor_ratio": 0.52,
+    "lst_anomaly": 2.7,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H11",
+    "population_density": 4900.0,
+    "built_up_ratio": 0.81,
+    "outdoor_labor_ratio": 0.54,
+    "lst_anomaly": 2.5,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H12",
+    "population_density": 5200.0,
+    "built_up_ratio": 0.79,
+    "outdoor_labor_ratio": 0.51,
+    "lst_anomaly": 2.3,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H13",
+    "population_density": 4800.0,
+    "built_up_ratio": 0.75,
+    "outdoor_labor_ratio": 0.46,
+    "lst_anomaly": 2.1,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H14",
+    "population_density": 4600.0,
+    "built_up_ratio": 0.72,
+    "outdoor_labor_ratio": 0.44,
+    "lst_anomaly": 1.9,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H15",
+    "population_density": 4300.0,
+    "built_up_ratio": 0.74,
+    "outdoor_labor_ratio": 0.45,
+    "lst_anomaly": 2.0,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H16",
+    "population_density": 3900.0,
+    "built_up_ratio": 0.45,
+    "outdoor_labor_ratio": 0.30,
+    "lst_anomaly": 0.6,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H17",
+    "population_density": 2800.0,
+    "built_up_ratio": 0.32,
+    "outdoor_labor_ratio": 0.22,
+    "lst_anomaly": -0.4,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H18",
+    "population_density": 5400.0,
+    "built_up_ratio": 0.58,
+    "outdoor_labor_ratio": 0.36,
+    "lst_anomaly": 1.2,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H19",
+    "population_density": 1800.0,
+    "built_up_ratio": 0.18,
+    "outdoor_labor_ratio": 0.15,
+    "lst_anomaly": -1.2,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H20",
+    "population_density": 3100.0,
+    "built_up_ratio": 0.35,
+    "outdoor_labor_ratio": 0.24,
+    "lst_anomaly": 0.1,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H21",
+    "population_density": 2200.0,
+    "built_up_ratio": 0.25,
+    "outdoor_labor_ratio": 0.18,
+    "lst_anomaly": -0.8,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H22",
+    "population_density": 3600.0,
+    "built_up_ratio": 0.42,
+    "outdoor_labor_ratio": 0.27,
+    "lst_anomaly": 0.4,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H23",
+    "population_density": 6800.0,
+    "built_up_ratio": 0.77,
+    "outdoor_labor_ratio": 0.49,
+    "lst_anomaly": 2.2,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H24",
+    "population_density": 5900.0,
+    "built_up_ratio": 0.73,
+    "outdoor_labor_ratio": 0.47,
+    "lst_anomaly": 2.0,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H25",
+    "population_density": 4700.0,
+    "built_up_ratio": 0.61,
+    "outdoor_labor_ratio": 0.38,
+    "lst_anomaly": 1.4,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H26",
+    "population_density": 6500.0,
+    "built_up_ratio": 0.66,
+    "outdoor_labor_ratio": 0.41,
+    "lst_anomaly": 1.6,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H27",
+    "population_density": 7100.0,
+    "built_up_ratio": 0.70,
+    "outdoor_labor_ratio": 0.43,
+    "lst_anomaly": 1.7,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H28",
+    "population_density": 6300.0,
+    "built_up_ratio": 0.64,
+    "outdoor_labor_ratio": 0.39,
+    "lst_anomaly": 1.5,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H29",
+    "population_density": 2600.0,
+    "built_up_ratio": 0.28,
+    "outdoor_labor_ratio": 0.20,
+    "lst_anomaly": -0.5,
+    "data_status": "demo"
+  },
+  {
+    "area_id": "H30",
+    "population_density": 4200.0,
+    "built_up_ratio": 0.50,
+    "outdoor_labor_ratio": 0.31,
+    "lst_anomaly": 0.7,
+    "data_status": "demo"
+  }
+]

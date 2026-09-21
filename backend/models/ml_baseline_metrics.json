@@ -1,0 +1,99 @@
+{
+  "note": "Prototype temporal ML baseline trained on 30 days of Haldia regional weather data. Not production validated.",
+  "dataset": {
+    "source": "data/ml_features_baseline.csv",
+    "total_rows_original": 18720,
+    "total_rows_after_feature_engineering": 18408,
+    "n_wards": 26,
+    "ward_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "forecast_horizon_hours": 6
+  },
+  "splits": {
+    "train_rows": 12870,
+    "train_range": [
+      "2026-08-20 06:00:00",
+      "2026-09-09 20:00:00"
+    ],
+    "validation_rows": 2756,
+    "validation_range": [
+      "2026-09-09 21:00:00",
+      "2026-09-14 06:00:00"
+    ],
+    "test_rows": 2782,
+    "test_range": [
+      "2026-09-14 07:00:00",
+      "2026-09-18 17:00:00"
+    ]
+  },
+  "feature_list": [
+    "population_density",
+    "temperature_c",
+    "rh_pct",
+    "wind_speed_kmh",
+    "shortwave_radiation_wm2",
+    "wbgt_proxy",
+    "heat_index",
+    "htsi_score",
+    "hour",
+    "day_of_week",
+    "day_of_year",
+    "hour_sin",
+    "hour_cos",
+    "day_of_year_sin",
+    "day_of_year_cos",
+    "htsi_lag_1",
+    "htsi_lag_3",
+    "htsi_lag_6",
+    "heat_index_lag_1",
+    "temperature_lag_1",
+    "rh_lag_1"
+  ],
+  "n_features": 21,
+  "persistence_baseline": {
+    "mae": 5.5327,
+    "rmse": 6.943,
+    "r2": -0.7028
+  },
+  "random_forest": {
+    "config": {
+      "n_estimators": 300,
+      "max_depth": 12,
+      "random_state": 42,
+      "n_jobs": -1,
+      "min_samples_leaf": 5
+    },
+    "mae": 5.9777,
+    "rmse": 8.2189,
+    "r2": -1.3862
+  },
+  "risk_category_accuracy": 0.761,
+  "rf_beats_persistence": false,
+  "generated_at": "2026-09-19T14:04:31.503866"
+}
