@@ -4,6 +4,7 @@ import json
 # pyrefly: ignore [missing-import]
 import pytest
 from main import get_areas
+from fastapi import BackgroundTasks
 
 async def run_tests():
     if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
@@ -13,7 +14,7 @@ async def run_tests():
             pass
 
     print("Fetching /api/areas response...")
-    areas = await get_areas()
+    areas = await get_areas(background_tasks=BackgroundTasks())
 
     # 1. Assert exactly 30 area records are returned in the top-level list
     assert isinstance(areas, list), f"Expected list, got {type(areas)}"

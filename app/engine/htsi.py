@@ -17,6 +17,7 @@ All formulas are transparent, deterministic, and bounded to 0.0–100.0.
 No ML, sklearn, or external libraries used.
 """
 
+from app.engine.validation import finite_float
 from app.engine.vulnerability import calculate_vulnerability, normalize_indicator
 
 
@@ -29,7 +30,13 @@ def calculate_htsi(thermal_stress_score: float, vulnerability_score: float) -> i
     Calculates Human Thermal Stress Index (HTSI) on a 0 - 100 integer scale.
     Formula: HTSI = 0.60 * thermal_stress_score + 0.40 * vulnerability_score
     """
-    htsi = (0.60 * thermal_stress_score) + (0.40 * vulnerability_score)
+    thermal = finite_float(thermal_stress_score, "thermal_stress_score")
+    vulnerability = finite_float(vulnerability_score, "vulnerability_score")
+    if not 0.0 <= thermal <= 100.0:
+        raise ValueError("thermal_stress_score must be between 0 and 100")
+    if not 0.0 <= vulnerability <= 100.0:
+        raise ValueError("vulnerability_score must be between 0 and 100")
+    htsi = (0.60 * thermal) + (0.40 * vulnerability)
     return int(round(max(0.0, min(100.0, htsi))))
 
 
@@ -45,11 +52,14 @@ def classify_risk(htsi: int) -> str:
     51 - 75  → HIGH
     76 - 100 → EXTREME
     """
-    if htsi <= 25:
+    score = finite_float(htsi, "htsi")
+    if not 0.0 <= score <= 100.0:
+        raise ValueError("htsi must be between 0 and 100")
+    if score <= 25:
         return "LOW"
-    elif htsi <= 50:
+    elif score <= 50:
         return "MODERATE"
-    elif htsi <= 75:
+    elif score <= 75:
         return "HIGH"
     else:
         return "EXTREME"
@@ -84,14 +94,18 @@ def generate_risk_drivers(
     WBGT thresholds, or Heat Index thresholds other than the normalized
     base_score condition above.
     """
+    base = finite_float(base_score, "base_score")
+    radiation = finite_float(radiation_bonus, "radiation_bonus")
+    wind = finite_float(wind_relief, "wind_relief")
+    vulnerability = finite_float(vulnerability_score, "vulnerability_score")
     drivers = []
-    if base_score >= 50:
+    if base >= 50:
         drivers.append("high_heat_index")
-    if radiation_bonus >= 3:
+    if radiation >= 3:
         drivers.append("high_solar_exposure")
-    if wind_relief >= 3:
+    if wind >= 3:
         drivers.append("wind_providing_relief")
-    if vulnerability_score >= 50:
+    if vulnerability >= 50:
         drivers.append("elevated_ward_vulnerability")
     return drivers
 

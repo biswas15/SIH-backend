@@ -16,6 +16,8 @@ No ML, no stochastic elements.  All functions are pure and side-effect-free.
 
 import math
 
+from app.engine.validation import finite_float, finite_optional_float
+
 
 # ---------------------------------------------------------------------------
 # 1.  Vapour Pressure
@@ -44,19 +46,30 @@ def calculate_vapor_pressure(temp_c: float, rh: float) -> float:
         >>> round(calculate_vapor_pressure(35.0, 80.0), 2)
         44.74
     """
-    saturation_vp = 6.105 * math.exp((17.27 * temp_c) / (237.7 + temp_c))
-    return round((rh / 100.0) * saturation_vp, 4)
+    temperature = finite_float(temp_c, "temp_c")
+    humidity = finite_float(rh, "rh")
+    if not 0.0 <= humidity <= 100.0:
+        raise ValueError("rh must be between 0 and 100")
+    saturation_vp = 6.105 * math.exp((17.27 * temperature) / (237.7 + temperature))
+    return round((humidity / 100.0) * saturation_vp, 4)
 
 
 # ---------------------------------------------------------------------------
-# 2.  NOAA / Rothfusz Heat Index  (validated prototype)
+# 2.  NOAA / Rothfusz Heat Index  (complete NWS/NOAA procedure)
 # ---------------------------------------------------------------------------
 
 def heat_index_c(temp_c: float, rh: float) -> float:
     """
-    NOAA/Rothfusz regression.
-    Valid above approximately 26.7°C for this MVP.
-    Below that threshold, return temp_c unchanged.
+    Complete NOAA/NWS Heat Index calculation.
+
+    Implements the full procedure:
+    1. Convert temperature to °F
+    2. Calculate preliminary Heat Index using Steadman formula
+    3. If preliminary HI < 80°F, return preliminary HI
+    4. Otherwise compute Rothfusz regression
+    5. Apply low-humidity adjustment if applicable
+    6. Apply high-humidity adjustment if applicable
+    7. Convert final result back to °C
 
     Args:
         temp_c : Air temperature (°C).
@@ -65,24 +78,51 @@ def heat_index_c(temp_c: float, rh: float) -> float:
     Returns:
         Heat Index (°C).
     """
-    if temp_c < 26.7:
-        return temp_c
+    temperature = finite_float(temp_c, "temp_c")
+    humidity = finite_float(rh, "rh")
+    if not 0.0 <= humidity <= 100.0:
+        raise ValueError("rh must be between 0 and 100")
 
-    T = temp_c * 9 / 5 + 32
+    # Convert to Fahrenheit for NWS calculations
+    T_f = temperature * 9.0 / 5.0 + 32.0
+    RH = humidity
 
+    # Step 1: Preliminary Heat Index (Steadman formula)
+    # HI = 0.5 * [T + 61.0 + (T - 68.0) * 1.2 + RH * 0.094]
+    preliminary_hi_f = 0.5 * (T_f + 61.0 + (T_f - 68.0) * 1.2 + RH * 0.094)
+
+    # If preliminary HI is below 80°F, return it (no Rothfusz needed)
+    if preliminary_hi_f < 80.0:
+        return round((preliminary_hi_f - 32.0) * 5.0 / 9.0, 2)
+
+    # Step 2: Rothfusz regression (valid for HI >= 80°F)
+    T = T_f
     hi_f = (
         -42.379
         + 2.04901523 * T
-        + 10.14333127 * rh
-        - 0.22475541 * T * rh
+        + 10.14333127 * RH
+        - 0.22475541 * T * RH
         - 0.00683783 * T**2
-        - 0.05481717 * rh**2
-        + 0.00122874 * T**2 * rh
-        + 0.00085282 * T * rh**2
-        - 0.00000199 * T**2 * rh**2
+        - 0.05481717 * RH**2
+        + 0.00122874 * T**2 * RH
+        + 0.00085282 * T * RH**2
+        - 0.00000199 * T**2 * RH**2
     )
 
-    return (hi_f - 32) * 5 / 9
+    # Step 3: Low humidity adjustment
+    # Applies when RH < 13% and 80°F <= T <= 112°F
+    if RH < 13.0 and 80.0 <= T <= 112.0:
+        adjustment = ((13.0 - RH) / 4.0) * math.sqrt((17.0 - abs(T - 95.0)) / 17.0)
+        hi_f -= adjustment
+
+    # Step 4: High humidity adjustment
+    # Applies when RH > 85% and 80°F <= T <= 87°F
+    if RH > 85.0 and 80.0 <= T <= 87.0:
+        adjustment = ((RH - 85.0) / 10.0) * ((87.0 - T) / 5.0)
+        hi_f += adjustment
+
+    # Convert back to Celsius
+    return round((hi_f - 32.0) * 5.0 / 9.0, 2)
 
 
 # ---------------------------------------------------------------------------
@@ -105,8 +145,12 @@ def calculate_bom_wbgt(temp_c: float, rh: float) -> float:
     Returns:
         WBGT proxy (°C), rounded to 2 d.p.
     """
-    vp = calculate_vapor_pressure(temp_c, rh)
-    return round(0.567 * temp_c + 0.393 * vp + 3.94, 2)
+    temperature = finite_float(temp_c, "temp_c")
+    humidity = finite_float(rh, "rh")
+    if not 0.0 <= humidity <= 100.0:
+        raise ValueError("rh must be between 0 and 100")
+    vp = calculate_vapor_pressure(temperature, humidity)
+    return round(0.567 * temperature + 0.393 * vp + 3.94, 2)
 
 
 # ---------------------------------------------------------------------------
@@ -141,15 +185,16 @@ def normalize_heat_index(hi_c: float) -> float:
         (54, 60, 95, 100),
     ]
 
-    if hi_c <= 20:
+    heat_index = finite_float(hi_c, "hi_c")
+    if heat_index <= 20:
         return 0.0
 
-    if hi_c >= 60:
+    if heat_index >= 60:
         return 100.0
 
     for lo, hi, out_lo, out_hi in bands:
-        if lo <= hi_c < hi:
-            return out_lo + (hi_c - lo) / (hi - lo) * (out_hi - out_lo)
+        if lo <= heat_index < hi:
+            return out_lo + (heat_index - lo) / (hi - lo) * (out_hi - out_lo)
 
     return 100.0
 
@@ -195,19 +240,30 @@ def thermal_stress_score(
             wind_relief     (float)   : Prototype wind relief applied.
             inputs_used     (list)    : Variables that contributed to this score.
     """
-    hi = heat_index_c(temp_c, rh)
+    temperature = finite_float(temp_c, "temp_c")
+    humidity = finite_float(rh, "rh")
+    wind = finite_optional_float(wind_kmh, "wind_kmh")
+    radiation = finite_optional_float(radiation_w_m2, "radiation_w_m2")
+    if not 0.0 <= humidity <= 100.0:
+        raise ValueError("rh must be between 0 and 100")
+    if wind is not None and wind < 0.0:
+        raise ValueError("wind_kmh must be non-negative")
+    if radiation is not None and radiation < 0.0:
+        raise ValueError("radiation_w_m2 must be non-negative")
+
+    hi = heat_index_c(temperature, humidity)
     base = normalize_heat_index(hi)
 
     radiation_bonus = 0.0
     wind_relief = 0.0
     inputs_used = ["temperature", "relative_humidity"]
 
-    if radiation_w_m2 is not None:
-        radiation_bonus = min(radiation_w_m2 / 800, 1) * 5
+    if radiation is not None:
+        radiation_bonus = min(radiation / 800, 1) * 5
         inputs_used.append("radiation")
 
-    if wind_kmh is not None:
-        wind_relief = min(wind_kmh / 20, 1) * 5
+    if wind is not None:
+        wind_relief = min(wind / 20, 1) * 5
         inputs_used.append("wind")
 
     score = max(0.0, min(100.0, base + radiation_bonus - wind_relief))

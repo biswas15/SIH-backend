@@ -1,0 +1,160 @@
+{
+  "cities": [
+    {
+      "city_id": "DELHI",
+      "name": "New Delhi",
+      "state": "Delhi",
+      "latitude": 28.6139,
+      "longitude": 77.2090,
+      "population": 16787941,
+      "area_km2": 1484.0,
+      "population_density": 11312.6,
+      "data_source": "Census 2011",
+      "geography_type": "National Capital Territory"
+    },
+    {
+      "city_id": "MUMBAI",
+      "name": "Mumbai",
+      "state": "Maharashtra",
+      "latitude": 19.0760,
+      "longitude": 72.8777,
+      "population": 12442373,
+      "area_km2": 603.4,
+      "population_density": 20620.4,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "KOLKATA",
+      "name": "Kolkata",
+      "state": "West Bengal",
+      "latitude": 22.5726,
+      "longitude": 88.3639,
+      "population": 4496694,
+      "area_km2": 206.08,
+      "population_density": 21820.1,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "CHENNAI",
+      "name": "Chennai",
+      "state": "Tamil Nadu",
+      "latitude": 13.0827,
+      "longitude": 80.2707,
+      "population": 7088000,
+      "area_km2": 426.0,
+      "population_density": 16638.5,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "BENGALURU",
+      "name": "Bengaluru",
+      "state": "Karnataka",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "population": 8443675,
+      "area_km2": 709.0,
+      "population_density": 11909.3,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "HYDERABAD",
+      "name": "Hyderabad",
+      "state": "Telangana",
+      "latitude": 17.3850,
+      "longitude": 78.4867,
+      "population": 6731790,
+      "area_km2": 650.0,
+      "population_density": 10356.6,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "AHMEDABAD",
+      "name": "Ahmedabad",
+      "state": "Gujarat",
+      "latitude": 23.0225,
+      "longitude": 72.5714,
+      "population": 5577940,
+      "area_km2": 464.0,
+      "population_density": 12021.4,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "JAIPUR",
+      "name": "Jaipur",
+      "state": "Rajasthan",
+      "latitude": 26.9124,
+      "longitude": 75.7873,
+      "population": 3046163,
+      "area_km2": 467.0,
+      "population_density": 6522.8,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "LUCKNOW",
+      "name": "Lucknow",
+      "state": "Uttar Pradesh",
+      "latitude": 26.8467,
+      "longitude": 80.9462,
+      "population": 2817105,
+      "area_km2": 350.0,
+      "population_density": 8048.9,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "PATNA",
+      "name": "Patna",
+      "state": "Bihar",
+      "latitude": 25.5941,
+      "longitude": 85.1376,
+      "population": 1684222,
+      "area_km2": 109.2,
+      "population_density": 15423.3,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "NAGPUR",
+      "name": "Nagpur",
+      "state": "Maharashtra",
+      "latitude": 21.1458,
+      "longitude": 79.0882,
+      "population": 2405665,
+      "area_km2": 227.36,
+      "population_density": 10580.9,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "BHUBANESWAR",
+      "name": "Bhubaneswar",
+      "state": "Odisha",
+      "latitude": 20.2961,
+      "longitude": 85.8245,
+      "population": 843402,
+      "area_km2": 135.0,
+      "population_density": 6247.4,
+      "data_source": "Census 2011",
+      "geography_type": "Municipal Corporation"
+    },
+    {
+      "city_id": "HALDIA",
+      "name": "Haldia",
+      "state": "West Bengal",
+      "latitude": 22.0624,
+      "longitude": 88.0772,
+      "population": 200827,
+      "area_km2": 102.0,
+      "population_density": 1968.9,
+      "data_source": "Census 2011",
+      "geography_type": "Municipality"
+    }
+  ]
+}
