@@ -1,5 +1,7 @@
 import json
 import os
+import re
+import unicodedata
 from typing import List, Optional
 
 from app.schemas.location import LocationContext
@@ -35,8 +37,44 @@ class IndiaCitiesLocationProvider(LocationProvider):
         )
 
     def get_location(self, query: str) -> Optional[LocationContext]:
-        if query in self.cities_db:
-            return self._build_context(self.cities_db[query])
+        normalized_query = str(query or "").strip().upper()
+        if normalized_query in self.cities_db:
+            return self._build_context(self.cities_db[normalized_query])
+        return None
+
+    @staticmethod
+    def _normalize_name(value: str) -> str:
+        ascii_value = unicodedata.normalize("NFKD", value or "").encode("ascii", "ignore").decode("ascii")
+        return re.sub(r"[^a-z0-9]+", " ", ascii_value.lower()).strip()
+
+    def resolve_location(self, state: str, district: str) -> Optional[LocationContext]:
+        """Resolve the frontend's State -> District selection to a supported city.
+
+        The prototype dataset is intentionally limited. Returning ``None`` for an
+        unsupported district lets the API expose an honest data-unavailable state
+        instead of attaching another city's weather or population to it.
+        """
+        state_key = self._normalize_name(state)
+        district_key = self._normalize_name(district)
+        if not state_key or not district_key:
+            return None
+
+        aliases = {
+            ("west bengal", "purba medinipur"): "HALDIA",
+            ("west bengal", "east medinipur"): "HALDIA",
+            ("west bengal", "haldia"): "HALDIA",
+            ("delhi", "new delhi"): "DELHI",
+        }
+        alias_id = aliases.get((state_key, district_key))
+        if alias_id:
+            return self.get_location(alias_id)
+
+        for city_data in self.cities_db.values():
+            if self._normalize_name(city_data.get("state", "")) != state_key:
+                continue
+            city_name = self._normalize_name(city_data.get("name", ""))
+            if district_key == city_name:
+                return self._build_context(city_data)
         return None
 
     def get_all_locations(self) -> List[LocationContext]:
