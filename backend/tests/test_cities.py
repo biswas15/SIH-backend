@@ -118,6 +118,26 @@ def test_api_weather_invalid_city_id():
     assert response.status_code == 404
 
 
+def test_location_resolver_haldia_district_alias():
+    response = client.get("/api/locations/resolve?state=West%20Bengal&district=Purba%20Medinipur")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["city_id"] == "HALDIA"
+    assert data["map_endpoint"] == "/api/haldia-gis"
+
+
+def test_location_resolver_supported_city():
+    response = client.get("/api/locations/resolve?state=Rajasthan&district=Jaipur")
+    assert response.status_code == 200
+    assert response.json()["city_id"] == "JAIPUR"
+
+
+def test_location_resolver_does_not_return_unrelated_mock_data():
+    response = client.get("/api/locations/resolve?state=Rajasthan&district=Jodhpur")
+    assert response.status_code == 404
+    assert response.json()["detail"]["code"] == "LOCATION_DATA_UNAVAILABLE"
+
+
 def test_city_risk_calculation_valid_htsi():
     """Test that city risk calculation produces valid HTSI (0-100)."""
     response = client.get("/api/weather?city_id=KOLKATA")

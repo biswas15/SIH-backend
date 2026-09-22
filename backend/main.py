@@ -282,6 +282,44 @@ def get_cities():
 
     return {"cities": result}
 
+
+@app.get("/api/locations")
+def get_locations():
+    """Return locations for which the backend has real prototype data."""
+    cities = get_cities()["cities"]
+    return {
+        "locations": cities,
+        "coverage": "prototype-selected-cities",
+        "total": len(cities),
+        "district_boundary_coverage": ["Haldia municipal wards"],
+    }
+
+
+@app.get("/api/locations/resolve")
+def resolve_location(state: str, district: str):
+    location = cities_location_provider.resolve_location(state, district)
+    if not location:
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "code": "LOCATION_DATA_UNAVAILABLE",
+                "message": "This district is selectable on the map, but backend data is not available yet.",
+                "state": state,
+                "district": district,
+            },
+        )
+    city_data = cities_location_provider.cities_db.get(location.spatial_id, {})
+    return {
+        "city_id": location.spatial_id,
+        "name": city_data.get("name", location.locality),
+        "state": city_data.get("state", location.state),
+        "requested_district": district,
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+        "map_endpoint": "/api/haldia-gis" if location.spatial_id == "HALDIA" else None,
+        "map_status": "ward-boundaries-available" if location.spatial_id == "HALDIA" else "district-map-frontend-only",
+    }
+
 @app.get("/api/haldia-gis")
 def get_haldia_gis():
     """Return Haldia ward polygons as GeoJSON for GIS map rendering."""
@@ -299,13 +337,32 @@ def get_haldia_gis():
     return data
 
 @app.get("/api/weather")
-async def get_weather(area_id: str = None, city_id: str = None):
+async def get_weather(
+    area_id: str = None,
+    city_id: str = None,
+    state: str = None,
+    district: str = None,
+):
     if city_id:
         city_id = city_id.upper()
         location = cities_location_provider.get_location(city_id)
         population = cities_population_provider.get_population(location) if location else None
         if not location:
             raise HTTPException(status_code=404, detail="City ID not found in local database")
+    elif state and district:
+        location = cities_location_provider.resolve_location(state, district)
+        if not location:
+            raise HTTPException(
+                status_code=404,
+                detail={
+                    "code": "LOCATION_DATA_UNAVAILABLE",
+                    "message": "Weather and population data are not available for this district yet.",
+                    "state": state,
+                    "district": district,
+                },
+            )
+        city_id = location.spatial_id
+        population = cities_population_provider.get_population(location)
     elif area_id:
         area_id = area_id.upper()
         location = location_provider.get_location(area_id)
@@ -313,7 +370,7 @@ async def get_weather(area_id: str = None, city_id: str = None):
         if not location:
             raise HTTPException(status_code=404, detail="Area ID not found in local database")
     else:
-        raise HTTPException(status_code=400, detail="Must provide either area_id or city_id")
+        raise HTTPException(status_code=400, detail="Must provide area_id, city_id, or state and district")
         
     current_weather, forecast_points = await weather_provider.get_weather(location.latitude, location.longitude)
     

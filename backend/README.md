@@ -219,6 +219,24 @@ Current weather
 Example:
 
 /api/weather?area_id=H04
+
+Frontend Location Integration
+
+GET /api/locations
+
+Returns the locations for which this prototype has real backend weather and demographic coverage.
+
+GET /api/locations/resolve?state=West%20Bengal&district=Purba%20Medinipur
+
+Resolves a frontend State → District selection to a supported backend `city_id`. Purba Medinipur resolves to the Haldia prototype. Unsupported districts return HTTP 404 with `LOCATION_DATA_UNAVAILABLE`; the API never substitutes another district's data.
+
+GET /api/weather?state=Rajasthan&district=Jaipur
+
+Returns current weather, forecast, HTSI risk, population, and recommended actions for a supported State → District selection. The existing `city_id` and `area_id` query styles remain backward compatible.
+
+GET /api/haldia-gis
+
+Returns detailed Haldia municipal ward polygons. Other state district boundaries are rendered by the frontend's `svgmap-india` package until authoritative nationwide district GeoJSON is added.
 Running the Backend
 1. Create the virtual environment
 python -m venv venv
