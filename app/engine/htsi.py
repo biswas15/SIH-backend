@@ -37,7 +37,7 @@ def calculate_htsi(thermal_stress_score: float, vulnerability_score: float) -> i
     if not 0.0 <= vulnerability <= 100.0:
         raise ValueError("vulnerability_score must be between 0 and 100")
     htsi = (0.60 * thermal) + (0.40 * vulnerability)
-    return int(round(max(0.0, min(100.0, htsi))))
+    return round(max(0.0, min(100.0, htsi)))
 
 
 # ---------------------------------------------------------------------------

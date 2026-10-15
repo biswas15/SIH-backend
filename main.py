@@ -8,6 +8,8 @@ from app.providers.location.haldia import HaldiaDemoLocationProvider
 from app.providers.population.haldia import HaldiaDemoPopulationProvider
 from app.providers.location.cities import IndiaCitiesLocationProvider
 from app.providers.population.cities import IndiaCitiesPopulationProvider
+from app.providers.location.districts import IndiaDistrictsLocationProvider
+from app.providers.population.districts import IndiaDistrictsPopulationProvider
 from app.providers.weather.open_meteo import OpenMeteoProvider
 from app.services.heatsense import process_area_timestep
 from app.services.alerts import dispatch_extreme_alert
@@ -25,7 +27,7 @@ def _env_float(name: str, default: float) -> float:
 
 app = FastAPI(title="Thermal Risk - Phase 1 Weather Ingestion API")
 
-WEATHER_TIMEOUT_SECONDS = _env_float("HEATSENSE_WEATHER_TIMEOUT_S", 15.0)
+WEATHER_TIMEOUT_SECONDS = _env_float("HEATSENSE_WEATHER_TIMEOUT_S", 20.0)
 
 cors_origins = [
     origin.strip()
@@ -45,6 +47,8 @@ location_provider = HaldiaDemoLocationProvider(data_dir=DATA_DIR)
 population_provider = HaldiaDemoPopulationProvider(data_dir=DATA_DIR)
 cities_location_provider = IndiaCitiesLocationProvider(data_dir=DATA_DIR)
 cities_population_provider = IndiaCitiesPopulationProvider(data_dir=DATA_DIR)
+districts_location_provider = IndiaDistrictsLocationProvider(data_dir=DATA_DIR)
+districts_population_provider = IndiaDistrictsPopulationProvider(data_dir=DATA_DIR)
 weather_provider = OpenMeteoProvider(timeout_seconds=WEATHER_TIMEOUT_SECONDS)
 
 
@@ -152,11 +156,25 @@ def get_alert_config():
     }
 
 
+_areas_cache = {"timestamp": None, "payload": None}
+AREAS_CACHE_TTL_SECONDS = 600.0
+
+def clear_areas_cache():
+    _areas_cache["timestamp"] = None
+    _areas_cache["payload"] = None
+
+
 @app.get("/api/areas")
 async def get_areas(background_tasks: BackgroundTasks):
     areas_list = location_provider.get_all_locations()
     if not areas_list:
         return []
+
+    now = datetime.now(tz=IST)
+    cached_time = _areas_cache.get("timestamp")
+    cached_payload = _areas_cache.get("payload")
+    if cached_payload and cached_time and (now - cached_time).total_seconds() < AREAS_CACHE_TTL_SECONDS:
+        return cached_payload
 
     # Fast path: the original implementation fired one Open-Meteo call for all areas.
     # To remain performant, we intercept the fact that OpenMeteoProvider normally takes single lat/lon.
@@ -174,6 +192,8 @@ async def get_areas(background_tasks: BackgroundTasks):
             response.raise_for_status()
             payload = response.json()
     except Exception as exc:
+        if cached_payload:
+            return cached_payload
         raise HTTPException(status_code=502, detail="Error fetching data from weather API") from exc
 
     if isinstance(payload, dict):
@@ -256,6 +276,8 @@ async def get_areas(background_tasks: BackgroundTasks):
             "assessment": assessment,
         })
 
+    _areas_cache["timestamp"] = now
+    _areas_cache["payload"] = result
     return result
 
 @app.get("/api/cities")
@@ -298,14 +320,70 @@ def get_haldia_gis():
 
     return data
 
+@app.get("/api/districts")
+def get_districts(state: str = None):
+    """List available Indian districts, optionally filtered by state."""
+    raw = districts_location_provider.raw_data
+    if state:
+        from app.providers.location.districts import _norm
+        norm_s = _norm(state)
+        for st_name, dists in raw.items():
+            if _norm(st_name) == norm_s or norm_s in _norm(st_name):
+                return {"state": st_name, "districts": list(dists.keys())}
+        raise HTTPException(status_code=404, detail=f"State '{state}' not found")
+    return {"states": {st: list(dists.keys()) for st, dists in raw.items()}}
+
 @app.get("/api/weather")
-async def get_weather(area_id: str = None, city_id: str = None):
-    if city_id:
-        city_id = city_id.upper()
-        location = cities_location_provider.get_location(city_id)
-        population = cities_population_provider.get_population(location) if location else None
+async def get_weather(
+    area_id: str = None,
+    city_id: str = None,
+    state: str = None,
+    district: str = None,
+):
+    district_area_meta = None
+    if district or (state and not city_id and not area_id):
+        target = district or state
+        location = districts_location_provider.find_district(target, state=state if district else None)
         if not location:
-            raise HTTPException(status_code=404, detail="City ID not found in local database")
+            detail_msg = f"District '{target}' not found" + (f" in state '{state}'" if state and district else "")
+            raise HTTPException(status_code=404, detail=detail_msg)
+        population = districts_population_provider.get_population(location)
+        district_area_meta = {
+            "city_id": location.spatial_id,
+            "name": location.district,
+            "state": location.state,
+            "latitude": location.latitude,
+            "longitude": location.longitude,
+            "population": population.population if population else None,
+            "area_km2": population.area_km2 if population else None,
+            "population_density": population.density if population else None,
+            "data_source": "Census of India 2011",
+            "geography_type": "District",
+        }
+    elif city_id:
+        city_id_upper = city_id.upper()
+        location = cities_location_provider.get_location(city_id_upper)
+        if not location:
+            # Fallback: check if the city_id corresponds to a district name
+            location = districts_location_provider.find_district(city_id, state=state)
+            if location:
+                population = districts_population_provider.get_population(location)
+                district_area_meta = {
+                    "city_id": location.spatial_id,
+                    "name": location.district,
+                    "state": location.state,
+                    "latitude": location.latitude,
+                    "longitude": location.longitude,
+                    "population": population.population if population else None,
+                    "area_km2": population.area_km2 if population else None,
+                    "population_density": population.density if population else None,
+                    "data_source": "Census of India 2011",
+                    "geography_type": "District",
+                }
+            else:
+                raise HTTPException(status_code=404, detail="City ID not found in local database")
+        else:
+            population = cities_population_provider.get_population(location)
     elif area_id:
         area_id = area_id.upper()
         location = location_provider.get_location(area_id)
@@ -313,7 +391,7 @@ async def get_weather(area_id: str = None, city_id: str = None):
         if not location:
             raise HTTPException(status_code=404, detail="Area ID not found in local database")
     else:
-        raise HTTPException(status_code=400, detail="Must provide either area_id or city_id")
+        raise HTTPException(status_code=400, detail="Must provide either area_id, city_id, or district")
         
     current_weather, forecast_points = await weather_provider.get_weather(location.latitude, location.longitude)
     
@@ -397,7 +475,7 @@ async def get_weather(area_id: str = None, city_id: str = None):
                 "data_source": None,
                 "geography_type": "ward_area",
             })(location_provider.areas_db.get(area_id))
-        )() if area_id else cities_location_provider.cities_db.get(city_id),
+        )() if area_id else (district_area_meta if district_area_meta else cities_location_provider.cities_db.get(city_id)),
         "ward": ward_info,
         "demographics": demographics,
         "metadata": {

@@ -1,0 +1,242 @@
+[
+  {
+    "area_id": "H01",
+    "area_name": "Haldia Township",
+    "latitude": 22.0667,
+    "longitude": 88.0698,
+    "matched_ward": 19,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H02",
+    "area_name": "Haldia Port Area",
+    "latitude": 22.0257,
+    "longitude": 88.0583,
+    "matched_ward": 26,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H03",
+    "area_name": "Durgachak",
+    "latitude": 22.0667,
+    "longitude": 88.1333,
+    "matched_ward": 9,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H04",
+    "area_name": "Sutahata",
+    "latitude": 22.1244,
+    "longitude": 88.1114,
+    "matched_ward": 1,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H05",
+    "area_name": "Haldia Refinery",
+    "latitude": 22.0458,
+    "longitude": 88.1043,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H06",
+    "area_name": "Manjushree",
+    "latitude": 22.0758,
+    "longitude": 88.1365,
+    "matched_ward": 10,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H07",
+    "area_name": "Basudevpur",
+    "latitude": 22.0872,
+    "longitude": 88.1358,
+    "matched_ward": 4,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H08",
+    "area_name": "Kshudiram Nagar",
+    "latitude": 22.0492,
+    "longitude": 88.0616,
+    "matched_ward": 24,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H09",
+    "area_name": "Chaitanyapur",
+    "latitude": 22.1436,
+    "longitude": 88.0834,
+    "matched_ward": null,
+    "mapping_status": "outside_municipal_boundary"
+  },
+  {
+    "area_id": "H10",
+    "area_name": "Haldia Industrial Park",
+    "latitude": 22.06,
+    "longitude": 88.11,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H11",
+    "area_name": "Exide Industries",
+    "latitude": 22.062,
+    "longitude": 88.102,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H12",
+    "area_name": "Tata Chemicals",
+    "latitude": 22.064,
+    "longitude": 88.106,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H13",
+    "area_name": "Mitsubishi Chemical",
+    "latitude": 22.058,
+    "longitude": 88.095,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H14",
+    "area_name": "South Asian Petrochemicals",
+    "latitude": 22.055,
+    "longitude": 88.09,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H15",
+    "area_name": "Haldia Energy Limited",
+    "latitude": 22.051,
+    "longitude": 88.085,
+    "matched_ward": 21,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H16",
+    "area_name": "Bhabanipur",
+    "latitude": 22.065,
+    "longitude": 88.065,
+    "matched_ward": 19,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H17",
+    "area_name": "Brajalalchak",
+    "latitude": 22.0646,
+    "longitude": 87.8595,
+    "matched_ward": null,
+    "mapping_status": "outside_municipal_boundary"
+  },
+  {
+    "area_id": "H18",
+    "area_name": "Girishmore",
+    "latitude": 22.072,
+    "longitude": 88.125,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H19",
+    "area_name": "Nayachar",
+    "latitude": 21.995,
+    "longitude": 88.088,
+    "matched_ward": null,
+    "mapping_status": "outside_municipal_boundary"
+  },
+  {
+    "area_id": "H20",
+    "area_name": "Kukrahati",
+    "latitude": 22.162,
+    "longitude": 88.143,
+    "matched_ward": null,
+    "mapping_status": "outside_municipal_boundary"
+  },
+  {
+    "area_id": "H21",
+    "area_name": "Geonkhali",
+    "latitude": 22.216,
+    "longitude": 88.046,
+    "matched_ward": null,
+    "mapping_status": "outside_municipal_boundary"
+  },
+  {
+    "area_id": "H22",
+    "area_name": "Boroitola",
+    "latitude": 22.08,
+    "longitude": 88.14,
+    "matched_ward": 10,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H23",
+    "area_name": "Haldia Dock Complex",
+    "latitude": 22.022,
+    "longitude": 88.062,
+    "matched_ward": 26,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H24",
+    "area_name": "IFFCO Haldia",
+    "latitude": 22.03,
+    "longitude": 88.07,
+    "matched_ward": 22,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H25",
+    "area_name": "HPL Link Road Area",
+    "latitude": 22.058,
+    "longitude": 88.1,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H26",
+    "area_name": "CPT Market",
+    "latitude": 22.035,
+    "longitude": 88.065,
+    "matched_ward": 23,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H27",
+    "area_name": "Akash Ganga Mall Area",
+    "latitude": 22.074,
+    "longitude": 88.136,
+    "matched_ward": 10,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H28",
+    "area_name": "Haldia Bhavan Area",
+    "latitude": 22.068,
+    "longitude": 88.068,
+    "matched_ward": 14,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H29",
+    "area_name": "Riverfront Area",
+    "latitude": 22.02,
+    "longitude": 88.055,
+    "matched_ward": 26,
+    "mapping_status": "gis_verified"
+  },
+  {
+    "area_id": "H30",
+    "area_name": "Helipad Ground Area",
+    "latitude": 22.07,
+    "longitude": 88.12,
+    "matched_ward": 11,
+    "mapping_status": "gis_verified"
+  }
+]
